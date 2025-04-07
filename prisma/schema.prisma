@@ -15,5 +15,17 @@ datasource db {
 
 model User {
   id String @id @default(uuid())
-    
+  name String
+  email String @unique
+  password String
+  level Int
+  profile_img String//base64
+  createdAt DateTime @default(now())
+  deletedAt DateTime? 
+}
+
+model Room {
+  id String @id @default(uuid())
+  description String
+  acessLevel Int
 }
