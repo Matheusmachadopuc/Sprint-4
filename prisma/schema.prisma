@@ -14,7 +14,7 @@ model User {
   email String @unique
   password String
   level Int
-  profile_img String//base64
+  profile_img String // base64
   createdAt DateTime @default(now())
   deletedAt DateTime? 
 }
@@ -23,4 +23,5 @@ model Room {
   id String @id @default(uuid())
   description String
   acessLevel Int
+  is_blocked  Boolean? @default(false)// campo para bloquear/desbloquear sala
 }
