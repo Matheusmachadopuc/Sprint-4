@@ -13,5 +13,10 @@ async function bootstrap() {
   app.useGlobalGuards(new (AuthGuard('jwt'))());
 
   await app.listen(3000);
+
+console.info(
+  `Server is running on http://localhost:3000\n`,
+)
 }
+
 bootstrap();

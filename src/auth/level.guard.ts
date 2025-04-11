@@ -17,7 +17,7 @@ export class LevelGuard implements CanActivate {
     const user = request.user;
 
     if (user.level < requiredLevel) {
-      throw new ForbiddenException('Erro 403 (Forbidden): Você não tem permissão para acessar este recurso.');
+      throw new ForbiddenException('Você não tem permissão para acessar este recurso.');
     }
     
     return true;
