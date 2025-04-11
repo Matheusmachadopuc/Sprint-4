@@ -2,13 +2,14 @@
 // "Repository + use-case"
 
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { UpdateLevelDto } from './dto/update-level.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   // CREATE
   async create(createUserDto: CreateUserDto) {
@@ -19,27 +20,43 @@ export class UsersService {
 
   // READ
   async findAll() {
-    return this.prisma.user.findMany();
-}
-
-  async findOneByEmail(email: string) {
-    return this.prisma.user.findUnique({ 
-        where: { email } 
+    return this.prisma.user.findMany({
+      where: { deletedAt: null },
     });
 }
 
+  async findOne(id: string) {
+    return this.prisma.user.findUnique({ 
+        where: { id, deletedAt: null }, 
+    });
+}
+  async findOneByEmail(email: string) {
+    return this.prisma.user.findUnique({
+        where: { email, deletedAt: null },
+    });
+  }
+
   // UPDATE
-  async updateByEmail(email: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const { level, ...data } = updateUserDto
     return await this.prisma.user.update({
-        where: { email },
+        where: { id },
         data: updateUserDto,
     });
   }
 
+  async updateLevel(id: string, updateLevelDto: UpdateLevelDto) {
+    return await this.prisma.user.update({
+        where: { id },
+        data: { level: updateLevelDto.level },
+    });
+  }
+
   // DELETE
-  async removeByEmail(email: string) {
-    return await this.prisma.user.delete({
-        where: { email },
+  async remove(id: string) {
+    return await this.prisma.user.update({
+        where: { id },
+        data: { deletedAt: new Date() },
     });
 }
 }
