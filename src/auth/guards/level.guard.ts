@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { REQUIRED_LEVEL_KEY } from './required-level.decorator';
+import { REQUIRED_LEVEL_KEY } from '../decorators/required-level.decorator';
 
 @Injectable()
 export class LevelGuard implements CanActivate {
