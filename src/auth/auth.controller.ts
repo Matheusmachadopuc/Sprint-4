@@ -1,18 +1,39 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { TokenDto } from './dto/token.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Endpoint para autenticação de usuários
+   * @param loginDto Objeto contendo email e senha
+   * @returns TokenDto com o token JWT
+   * @throws UnauthorizedException Se as credenciais forem inválidas
+   */
   @Post('login')
-  async login(@Body() loginDto: { email: string; password: string }) {
-    // Valida credenciais
-    const user = await this.authService.validateUser(
-      loginDto.email,
-      loginDto.password,
-    );
-    // Retorna um token JWT
-    return this.authService.login(user);
+  async login(@Body() loginDto: LoginDto): Promise<TokenDto> {
+    try {
+      // Valida credenciais usando o AuthService
+      const user = await this.authService.validateUser(
+        loginDto.email,
+        loginDto.password,
+      );
+
+      if (!user) {
+        // Se as credenciais forem inválidas, lança erro 401
+        throw new UnauthorizedException('Credenciais inválidas');
+      }
+
+      // Gera e retorna um token JWT válido
+      return await this.authService.login(user);
+    } catch (error) {
+      // Mantém o mesmo comportamento de lançar UnauthorizedException
+      throw new UnauthorizedException(
+        error.message || 'Falha na autenticação',
+      );
+    }
   }
 }

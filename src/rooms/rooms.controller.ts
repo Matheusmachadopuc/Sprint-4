@@ -6,9 +6,9 @@ import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { UseGuards } from '@nestjs/common';
-import { LevelGuard } from '../auth/level.guard';
+import { LevelGuard } from '../auth/guards/level.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { RequiredLevel } from '../auth/required-level.decorator';
+import { RequiredLevel } from '../auth/decorators/required-level.decorator';
 
 @Controller('room')
 @UseGuards(AuthGuard('jwt')) // verifica autenticação via JWT
