@@ -2,6 +2,8 @@ import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { TokenDto } from './dto/token.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +16,7 @@ export class AuthController {
    * @throws UnauthorizedException Se as credenciais forem inválidas
    */
   @Post('login')
+  @Public()
   async login(@Body() loginDto: LoginDto): Promise<TokenDto> {
     try {
       // Valida credenciais usando o AuthService
@@ -35,5 +38,9 @@ export class AuthController {
         error.message || 'Falha na autenticação',
       );
     }
+  }
+  @Post('register')
+    async register(@Body() dto: CreateUserDto) {
+      return this.authService.register(dto);
   }
 }

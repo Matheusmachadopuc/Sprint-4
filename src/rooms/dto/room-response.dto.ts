@@ -12,7 +12,7 @@ export class RoomResponseDto {
   accessLevel: number;
 
   @Expose()
-  is_blocked: boolean;
+  isBlocked: boolean;
 
   @Expose({ name: 'createdAt' })
   created_at: Date;

@@ -2,6 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 @Injectable()
 export class AuthService {
@@ -40,4 +42,31 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+
+async register(dto: CreateUserDto) {
+  const userExists = await this.usersService.findOneByEmail(dto.email);
+  if (userExists) {
+    throw new BadRequestException('E-mail já cadastrado');
+  }
+
+  const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+  const user = await this.usersService.create({
+    name: dto.name,
+    email: dto.email,
+    password: hashedPassword,
+    level: dto.level,
+    profile_img: dto.profile_img,
+  });
+
+  return {
+    message: 'Usuário criado com sucesso!',
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    },
+  };
+}
 }
