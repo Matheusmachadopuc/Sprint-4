@@ -7,9 +7,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateLevelDto } from './dto/update-level.dto';
 import { UseGuards } from '@nestjs/common';
-import { LevelGuard } from '../auth/level.guard';
+import { LevelGuard } from '../auth/guards/level.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { RequiredLevel } from '../auth/required-level.decorator';
+import { RequiredLevel } from '../auth/decorators/required-level.decorator';
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt')) // verifica autenticação via JWT
