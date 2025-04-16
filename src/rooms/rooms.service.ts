@@ -46,12 +46,12 @@ export class RoomsService {
         throw new Error('Sala não encontrada');
   
     // 2. Inverte o valor de is_blocked
-    const newBlockedStatus = !room.is_blocked;
+    const newBlockedStatus = !room.isBlocked;
   
     // 3. Atualiza a sala
     return await this.prisma.room.update({
       where: { id },
-      data: { is_blocked: newBlockedStatus },
+      data: { isBlocked: newBlockedStatus },
     });
   }
 }
