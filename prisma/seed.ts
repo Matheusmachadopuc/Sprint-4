@@ -16,7 +16,7 @@ async function main() {
     },
   });
 
-  console.log('🌱 Usuário seed criado com sucesso!');
+  console.log('Usuário seed criado com sucesso!');
 }
 
 main()

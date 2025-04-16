@@ -26,12 +26,12 @@ export class UsersService {
 }
 
   async findOne(id: string) {
-    return this.prisma.user.findUnique({ 
+    return this.prisma.user.findFirst({ 
         where: { id, deletedAt: null }, 
     });
 }
   async findOneByEmail(email: string) {
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
         where: { email, deletedAt: null },
     });
   }
@@ -41,7 +41,7 @@ export class UsersService {
     const { level, ...data } = updateUserDto
     return await this.prisma.user.update({
         where: { id },
-        data: updateUserDto,
+        data,
     });
   }
 

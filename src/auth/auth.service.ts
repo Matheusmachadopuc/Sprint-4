@@ -1,12 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
@@ -18,14 +18,18 @@ export class AuthService {
    * Se estiverem certas, retorna o usuário, se não, lança exceção (throw).
    */
   async validateUser(email: string, plainPassword: string) {
+    this.logger.log(`Validando usuário para email: ${email}`);
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
+      this.logger.error('Usuário não encontrado');
       throw new UnauthorizedException('Usuário não encontrado');
     }
 
     // Compara a senha em texto plano com a senha armazenada (hasheada) usando bcrypt.compare.
     const isPasswordValid = await bcrypt.compare(plainPassword, user.password);
+    this.logger.log(`Senha válida: ${isPasswordValid}`);
     if (!isPasswordValid) {
+      this.logger.error('Senha incorreta');
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
@@ -42,31 +46,4 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
-
-
-async register(dto: CreateUserDto) {
-  const userExists = await this.usersService.findOneByEmail(dto.email);
-  if (userExists) {
-    throw new BadRequestException('E-mail já cadastrado');
-  }
-
-  const hashedPassword = await bcrypt.hash(dto.password, 10);
-
-  const user = await this.usersService.create({
-    name: dto.name,
-    email: dto.email,
-    password: hashedPassword,
-    level: dto.level,
-    profile_img: dto.profile_img,
-  });
-
-  return {
-    message: 'Usuário criado com sucesso!',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    },
   };
-}
-}

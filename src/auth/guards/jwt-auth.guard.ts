@@ -35,12 +35,7 @@ import {
       }
   
       try {
-        // Verifica e decodifica o token JWT
-        const payload = await this.jwtService.verifyAsync(token, {
-          secret: process.env.JWT_SECRET,
-        });
-  
-        // Adiciona o payload do usuário à requisição
+        const payload = await this.jwtService.verifyAsync(token);
         request['user'] = payload;
       } catch (error) {
         throw new UnauthorizedException('Token inválido ou expirado');

@@ -2,7 +2,6 @@ import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { TokenDto } from './dto/token.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
@@ -38,9 +37,5 @@ export class AuthController {
         error.message || 'Falha na autenticação',
       );
     }
-  }
-  @Post('register')
-    async register(@Body() dto: CreateUserDto) {
-      return this.authService.register(dto);
   }
 }
