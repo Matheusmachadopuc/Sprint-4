@@ -31,7 +31,7 @@ export class RoomsService {
 
   // UPDATE
   async update(id: string, updateRoomDto: UpdateRoomDto) {
-    return await this.prisma.user.update({
+    return await this.prisma.room.update({
         where: { id },
         data: updateRoomDto,
     });
@@ -45,7 +45,7 @@ export class RoomsService {
     if (!room) 
         throw new Error('Sala não encontrada');
   
-    // 2. Inverte o valor de is_blocked
+    // 2. Inverte o valor de isBlocked
     const newBlockedStatus = !room.isBlocked;
   
     // 3. Atualiza a sala

@@ -43,7 +43,11 @@ export class UsersController {
   //(PATCH /users/:id)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
     const user = req.user;
-    if (user.level < 5 && user.userId !== id) {
+
+    console.log('user.id:', user.id);
+    console.log('id da URL:', id);
+
+    if (user.level < 5 && user.id !== id) {
       throw new ForbiddenException('Você não tem permissão para atualizar este usuário');
     } 
     return this.usersService.update(id, updateUserDto);
@@ -54,7 +58,7 @@ export class UsersController {
   @RequiredLevel(5) // só nível 5 pode atualizar level
   //(PATCH /users/:id/level)
   async updateLevel(@Param('id') id: string, @Body() updateLevelDto: UpdateLevelDto) {
-    return this.usersService.update(id, updateLevelDto);
+    return this.usersService.updateLevel(id, updateLevelDto);
   }
 
   // DELETE

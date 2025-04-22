@@ -8,9 +8,9 @@ export class CreateRoomDto {
   
   @IsNotEmpty()
   @IsInt()
-  acessLevel: number;
+  accessLevel: number;
 
   @IsOptional()
   @IsBoolean()
-  is_blocked?: boolean;
+  isBlocked?: boolean;
 }

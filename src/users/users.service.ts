@@ -6,6 +6,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateLevelDto } from './dto/update-level.dto';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
@@ -13,8 +15,12 @@ export class UsersService {
 
   // CREATE
   async create(createUserDto: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     return await this.prisma.user.create({
-        data: createUserDto
+        data: {
+          ...createUserDto,
+          password: hashedPassword,
+        },
     });
 }
 
@@ -38,10 +44,14 @@ export class UsersService {
 
   // UPDATE
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const { level, ...data } = updateUserDto
+    const { level, ...rest } = updateUserDto
+    if (rest.password) {
+      rest.password = await bcrypt.hash(rest.password, 10);
+    }
+
     return await this.prisma.user.update({
         where: { id },
-        data,
+        data: rest,
     });
   }
 
