@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateLevelDto } from './dto/update-level.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -13,23 +14,24 @@ export class UsersService {
 
   // CREATE
   async create(createUserDto: CreateUserDto) {
-    return await this.prisma.user.create({
-        data: createUserDto
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    return this.prisma.user.create({
+      data: { ...createUserDto, password: hashedPassword },
     });
-}
+  }
 
   // READ
   async findAll() {
     return this.prisma.user.findMany({
       where: { deletedAt: null },
     });
-}
+  }
 
   async findOne(id: string) {
     return this.prisma.user.findFirst({ 
         where: { id, deletedAt: null }, 
     });
-}
+  }
   async findOneByEmail(email: string) {
     return this.prisma.user.findFirst({
         where: { email, deletedAt: null },
@@ -38,10 +40,9 @@ export class UsersService {
 
   // UPDATE
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const { level, ...data } = updateUserDto
-    return await this.prisma.user.update({
-        where: { id },
-        data,
+    return this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
     });
   }
 
@@ -58,5 +59,5 @@ export class UsersService {
         where: { id },
         data: { deletedAt: new Date() },
     });
-}
+  }
 }

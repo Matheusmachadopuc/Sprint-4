@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -46,4 +47,24 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
-  };
+
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new NotFoundException('Usuário não encontrado.');
+
+    const token = crypto.randomBytes(32).toString('hex');
+    
+    await this.prisma.passwordReset.create({
+      data: { userId: user.id, token, expiresAt: new Date(Date.now() + 3600000) },
+    });
+
+   
+    await this.mailService.sendMail({
+      to: email,
+      subject: 'Redefinição de Senha',
+      text: `Use este token para redefinir sua senha: ${token}`,
+    });
+
+    return 'Token enviado por e-mail.';
+  }
+}

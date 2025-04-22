@@ -1,7 +1,7 @@
 // Contém a lógica de negócio para as salas, a comunicação com o banco de dados (PrismaService) e as regras de negócio específicas da funcionalidade.
 // "Repository + use-case"
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
@@ -38,20 +38,21 @@ export class RoomsService {
   }
 
   async toggleBlock(id: string) {
-    // 1. Verificar a sala
-    const room = await this.prisma.room.findUnique({ 
-        where: { id } 
-    });
-    if (!room) 
-        throw new Error('Sala não encontrada');
-  
-    // 2. Inverte o valor de is_blocked
-    const newBlockedStatus = !room.isBlocked;
-  
-    // 3. Atualiza a sala
-    return await this.prisma.room.update({
+    const room = await this.prisma.room.findUnique({ where: { id } });
+    return this.prisma.room.update({
       where: { id },
-      data: { isBlocked: newBlockedStatus },
+      data: { isBlocked: !room.isBlocked },
     });
+  }
+
+  async enterRoom(userId: string, roomId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const room = await this.prisma.room.findUnique({ where: { id: roomId } });
+
+    if (user.level < room.accessLevel) {
+      throw new ForbiddenException('Nível insuficiente para acessar esta sala.');
+    }
+
+    return 'Acesso permitido!';
   }
 }

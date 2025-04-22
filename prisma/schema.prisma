@@ -9,25 +9,22 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  password     String
-  level        Int      @default(1)
-  profile_img  String?
-  createdAt    DateTime @default(now())
-  deletedAt    DateTime?
-  accessLogs   AccessLog[]
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  password    String
+  level       Int
+  profile_img String?
+  createdAt   DateTime @default(now())
+  deletedAt   DateTime?
 }
 
 model Room {
-  id           String   @id @default(uuid())
-  description  String
-  accessLevel  Int      @default(1)
-  isBlocked    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  accessLogs   AccessLog[]
+  id          String   @id @default(uuid())
+  description String
+  accessLevel Int
+  isBlocked   Boolean  @default(false)
+  createdAt   DateTime @default(now())
 }
 
 model AccessLog {
